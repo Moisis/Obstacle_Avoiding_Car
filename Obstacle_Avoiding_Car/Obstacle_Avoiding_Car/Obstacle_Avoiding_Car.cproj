@@ -120,6 +120,24 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="HAL\DC_MOTOR\DC_MOTOR_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HAL\DC_MOTOR\DC_MOTOR_interface.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HAL\DC_MOTOR\DC_MOTOR_program.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HAL\LCD\LCD_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HAL\LCD\LCD_interface.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HAL\LCD\LCD_program.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="HAL\SERVO\SERVO_interface.h">
       <SubType>compile</SubType>
     </Compile>
@@ -147,6 +165,15 @@
     <Compile Include="MCAL\DIO\DIO_program.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="MCAL\EXTI\EXTI_interface.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MCAL\EXTI\EXTI_private.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MCAL\EXTI\EXTI_program.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="MCAL\GI\GI_interface.h">
       <SubType>compile</SubType>
     </Compile>
@@ -156,16 +183,40 @@
     <Compile Include="MCAL\GI\GI_program.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="MCAL\TIMER\TIMER_config.h">
+    <Compile Include="MCAL\TIMER\TIMER_0\TIMER0_config.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="MCAL\TIMER\TIMER_interface.h">
+    <Compile Include="MCAL\TIMER\TIMER_0\TIMER0_interface.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="MCAL\TIMER\TIMER_private.h">
+    <Compile Include="MCAL\TIMER\TIMER_0\TIMER0_private.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="MCAL\TIMER\TIMER_program.c">
+    <Compile Include="MCAL\TIMER\TIMER_0\TIMER0_program.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MCAL\TIMER\TIMER_1\TMR1_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MCAL\TIMER\TIMER_1\TMR1_interface.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MCAL\TIMER\TIMER_1\TMR1_private.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MCAL\TIMER\TIMER_1\TMR1_program.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MCAL\TIMER\TIMER_2\TMR2_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MCAL\TIMER\TIMER_2\TMR2_interface.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MCAL\TIMER\TIMER_2\TMR2_private.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MCAL\TIMER\TIMER_2\TMR2_program.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="UTIL\BIT_MATH.h">
@@ -177,13 +228,18 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HAL\LCD" />
+    <Folder Include="HAL\DC_MOTOR" />
     <Folder Include="HAL\SERVO" />
     <Folder Include="HAL\ULTRASONIC" />
     <Folder Include="MCAL" />
     <Folder Include="HAL" />
     <Folder Include="MCAL\DIO" />
     <Folder Include="MCAL\GI" />
+    <Folder Include="MCAL\EXTI" />
     <Folder Include="MCAL\TIMER" />
+    <Folder Include="MCAL\TIMER\TIMER_0" />
+    <Folder Include="MCAL\TIMER\TIMER_2" />
+    <Folder Include="MCAL\TIMER\TIMER_1" />
     <Folder Include="UTIL" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />

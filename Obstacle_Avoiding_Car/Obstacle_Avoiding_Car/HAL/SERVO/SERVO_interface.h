@@ -3,14 +3,19 @@
 #define SERVO_INTERFACE_H
 
 
+#define SERVO_PORT DIO_PORTD
+#define SERVO_PIN  DIO_PIN5
 
 
 
+#define FORWARD_Angle      135 
+#define RIGHT_Angle          45
+#define LEFT_Angle  270
 
-void SERVO_voidTimer1InitOCR1A(void);
-void SERVO_voidTimer1InitOCR1B(void);
-void SERVO_voidTimer1ServoSetAngleOCR1A(u32 copy_u32Angle);
-void SERVO_voidTimer1ServoSetAngleOCR1B(u32 copy_u32Angle);
+void SERVO_Init(void);
+void SERVO_ON (f32 angle);
+void SERVO_Off (void);
+
 
 
 

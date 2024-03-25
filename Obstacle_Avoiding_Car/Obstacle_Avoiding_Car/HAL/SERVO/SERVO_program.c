@@ -9,7 +9,7 @@
 /* HAL Layer */
 
 #include "../../MCAL/DIO/DIO_interface.h"
-#include "../../MCAL/TIMER/TIMER_interface.h"
+#include "../../MCAL/TIMER/TIMER_1/TMR1_interface.h"
 
 
 
@@ -18,35 +18,31 @@
 
 
 
-void SERVO_voidTimer1InitOCR1A(void)
+void SERVO_Init(void)
 {
-	DIO_setPinDirection(DIO_PORTD,DIO_PIN5 , DIO_PIN_OUTPUT );
-
-	TIMER_voidTimer1Enable(TIMER1_MODE_FAST_PWM_ICR1,TIMER1_MODE_CHANNEL_A_CLEAR_OC1A,TIMER1_MODE_CHANNEL_B_NORMAL);
-}
-
-
-
-void SERVO_voidTimer1InitOCR1B(void)
-{
-	DIO_setPinDirection(DIO_PORTD,DIO_PIN4 , DIO_PIN_OUTPUT );
+	/* OC1A pin as output pin */
+	DIO_setPinDirection(SERVO_PORT, SERVO_PIN, DIO_PIN_OUTPUT);
 	
-	TIMER_voidTimer1Enable(TIMER1_MODE_FAST_PWM_OCR1A,TIMER1_MODE_CHANNEL_A_NORMAL,TIMER1_MODE_CHANNEL_B_CLEAR_OC1B);
-}
-
-
-void SERVO_voidTimer1ServoSetAngleOCR1A(u32 Copy_u32Angle)
-{
-	TIMER_voidTimer1SetICR1 (19999);
-	u32 Local_u32AnglePulse = (((Copy_u32Angle * 1840 )/180)+480);
-	TIMER_voidTimer1SetOCR1A(Local_u32AnglePulse);
+	/* TMR1 init at pwm mode 14 */
+	TMR1_init();
 }
 
 
 
-void SERVO_voidTimer1ServoSetAngleOCR1B(u32 Copy_u32Angle)
+
+void SERVO_ON(f32 Angle)
 {
-	TIMER_voidTimer1SetOCR1A (19999);
-	u32 Local_u32AnglePulse = (((Copy_u32Angle * 1840 )/180)+480);
-	TIMER_voidTimer1SetOCR1B(Local_u32AnglePulse);
+	f32 DutyCycle;
+	DutyCycle=5.0+(Angle/36.0);
+	TMR1_setFastPWM_usingMode14(DutyCycle , 50 );
+	TMR1_start();
+
+}
+
+
+
+void SERVO_Off(void)
+{
+	/* TMR1 stop */
+	TMR1_stop();
 }

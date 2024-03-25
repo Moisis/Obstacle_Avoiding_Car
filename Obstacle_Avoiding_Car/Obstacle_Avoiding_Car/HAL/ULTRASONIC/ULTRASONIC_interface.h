@@ -10,10 +10,9 @@
 
 
 
-void ULTRASONIC_voidInit(void);
-void ULTRASONIC_voidTrigger(void);
-u16 ULTRASONIC_u16GetDistance(void);
-void ULTRASONIC_voidEdgeProcessing(void);
+void ULTRASONIC_Init(void);
+
+void Ultrasonic_Get_Distance   (f64* Distance);
 
 
 

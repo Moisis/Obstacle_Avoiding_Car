@@ -5,245 +5,41 @@
  * Author : future
  */ 
 
+#define  F_CPU 16000000UL
+#include <util/delay.h>
 /* LIB */
 #include "UTIL/STD_TYPES.h"
 #include "UTIL/BIT_MATH.h"
 //#include "stdio.h"
-#define  F_CPU 8000000UL
-#include <util/delay.h>
+
 /* MCAL */
 #include "MCAL/DIO/DIO_interface.h"
-#include "MCAL/TIMER/TIMER_interface.h"
+
+#include "MCAL/EXTI/EXTI_interface.h"
+#include "MCAL/GI/GI_interface.h"
+
+#include "MCAL/TIMER/TIMER_0/TIMER0_interface.h"
+#include "MCAL/TIMER/TIMER_0/TIMER0_config.h"
+#include "MCAL/TIMER/TIMER_1/TMR1_interface.h"
+#include "MCAL/TIMER/TIMER_1/TMR1_config.h"
+#include "MCAL/TIMER/TIMER_2/TMR2_interface.h"
+#include "MCAL/TIMER/TIMER_2/TMR2_config.h"
+
+
+
 /* HAL */
 #include "HAL/SERVO/SERVO_interface.h"
 #include "HAL/ULTRASONIC/ULTRASONIC_interface.h"
+#include "HAL/DC_MOTOR/DC_MOTOR_interface.h"
+#include "HAL/LCD/LCD_interface.h"
 
 
 
+static u16 Speed=85;
 
+#define MAX_SPEED                         100
+#define MIN_SPEED                         0
 
-/* Configuration L298 Port and pits */
-#define Robot_u8_MOTOR_DRIVER_L298_PORT            DIO_PORTA
-#define Robot_u8_MOTOR_DRIVER_L298_IN1             DIO_PIN0
-#define Robot_u8_MOTOR_DRIVER_L298_IN2             DIO_PIN1
-#define Robot_u8_MOTOR_DRIVER_L298_IN3             DIO_PIN2
-#define Robot_u8_MOTOR_DRIVER_L298_IN4             DIO_PIN4
-/* Init modes Speeds*/
-#define Robot_u8_INIT_SPEED                        60 	/* 60 % */
-#define Robot_u8_ObstacleAvoidingMode_SPEED        60  	/* 60 % */
-
-
-void Set_Car_Speed(u8 Speed)
-{
-	/* Speed control by Timer0 and Timer2 */
-	TIMER_voidTimer0GeneratePWM(Speed);
-	TIMER_voidTimer2GeneratePWM(Speed);
-}
-
-
-/************************************************************************/
-/*                                CAR MOVES                              */
-/************************************************************************/
-
-
-void Car_Stop(void)
-{
-	/* Stop motors */
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN1,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN2,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN3,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN4,DIO_PIN_LOW);
-}
-void Car_Forward(void)
-{
-	/* all motors forward */
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN1,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN2,DIO_PIN_HIGH);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN3,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN4,DIO_PIN_HIGH);
-}
-void Car_Backward(void)
-{
-	/* all motors Backward */
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN1,DIO_PIN_HIGH);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN2,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN3,DIO_PIN_HIGH);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN4,DIO_PIN_LOW);
-}
-void Car_Left(void)
-{
-	/* Left motors forward and Right motors Backward */
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN1,DIO_PIN_HIGH);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN2,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN3,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN4,DIO_PIN_HIGH);
-}
-void Car_Right(void)
-{
-	/* Left motors Backward and Right motors forward */
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN1,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN2,DIO_PIN_HIGH);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN3,DIO_PIN_HIGH);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN4,DIO_PIN_LOW);
-}
-
-void Robot_voidStep(void)
-{
-	/* After Stop take Step */
-	Set_Car_Speed(60);
-	Car_Forward();
-	_delay_ms(170);
-}
-
-void Car_Right90(void)
-{
-	
-	/* turn 90 degree Right */
-	Set_Car_Speed(60);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN1,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN2,DIO_PIN_HIGH);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN3,DIO_PIN_HIGH);
-	DIO_setPinValue(DIO_PORTB,DIO_PIN0,DIO_PIN_LOW);
-	/* value of delay will change by change (voltage and arena) */
-	
-	_delay_ms(100);
-	Car_Stop();
-	Set_Car_Speed(Robot_u8_INIT_SPEED);
-
-}
-void Car_Left90(void)
-{
-	/* turn 90 degree Left */
-	Set_Car_Speed(60);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN1,DIO_PIN_HIGH);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN2,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN3,DIO_PIN_LOW);
-	DIO_setPinValue(DIO_PORTB,DIO_PIN0,DIO_PIN_HIGH);
-	/* value of delay will change by change (voltage and arena) */
-	_delay_ms(100);
-	Car_Stop();
-	Set_Car_Speed(Robot_u8_INIT_SPEED);
-}
-void Car_Reverse(void)
-{
-	/* turn 180 degree  */
-	Set_Car_Speed(60);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN1,DIO_PIN_HIGH);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN2,DIO_PIN_LOW);
-	DIO_setPinValue(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN3,DIO_PIN_LOW);
-	DIO_setPinValue(DIO_PORTB,DIO_PIN0,DIO_PIN_HIGH);
-	/* value of delay will change by change (voltage and arena) */
-	_delay_ms(300);
-	Car_Stop();
-	Set_Car_Speed(Robot_u8_INIT_SPEED);
-}
-
-void Car_Compare(u16 LeftObject,u16 RightObject)
-{
-	  /* Comparison between two directions and set Orientation */
-	  if (LeftObject > RightObject)
-	  {
-		  Car_Left();
-		  Car_Left();
-	  }
-	  else if (LeftObject <= RightObject)
-	  {
-		  Car_Right();
-		  Car_Right();
-	  }
-	  else if (LeftObject < 10 && RightObject < 10)
-	  {
-		  Car_Reverse();
-		  Car_Reverse();
-	  }
-}
-
-
-
-
-void Start_AutoMode_Car(void)
-{
-  u16 Local_u16LeftObject = 0, Local_u16RightObject = 0, Local_u16DistanceObject = 0;
-    Set_Car_Speed(Robot_u8_ObstacleAvoidingMode_SPEED);
-
-    while (1)
-    {
-        /* Read distance -->if no object go forward */
-        Local_u16DistanceObject = ULTRASONIC_u16GetDistance();
-		
-        if (Local_u16DistanceObject == 0)
-        {
-            Local_u16DistanceObject = 250;
-        }
-        if (Local_u16DistanceObject <= 15)
-        {
-            /* if find object stop
-             * Read left and right
-             * and Orientation to open road
-             *   */
-            Car_Backward();
-            _delay_ms(300);
-            /* Stop motors*/
-            Car_Stop();
-            _delay_ms(300);
-            /* Servo turn to Left  then read distance*/
-            SERVO_voidTimer1ServoSetAngleOCR1B(135);
-			 _delay_ms(300);
-            Local_u16LeftObject = ULTRASONIC_u16GetDistance();
-			_delay_ms(300);
-     
-            /* Servo turn to Right then read distance*/
-	
-            SERVO_voidTimer1ServoSetAngleOCR1B(360);
-          _delay_ms(300);
-           Local_u16RightObject = ULTRASONIC_u16GetDistance();
-           _delay_ms(300);
-            /* Set Servo direction */
-
-            SERVO_voidTimer1ServoSetAngleOCR1B(270);
-            _delay_ms(300);
-			
-            /* Comparison between to direction and set Orientation*/
-            Car_Compare(Local_u16LeftObject, Local_u16RightObject);
-        }
-        else
-        {
-            /* if no object go forward */
-		
-           Car_Forward();
-            _delay_ms(1000);
-        }
-    }
-
-
-}
-/*********************************************************** Initialization ****************************************************************/
-void Robot_voidInit(void)
-{
-
-	/************************** Init Timer ************************************/
-	TIMER_voidTimer0Init();
-	DIO_setPinDirection(DIO_PORTB , DIO_PIN3 , DIO_PIN_OUTPUT);
-	TIMER_voidTimer2Init();
-	DIO_setPinDirection(DIO_PORTD , DIO_PIN7 , DIO_PIN_OUTPUT);
-	/**************************** Init Servo **********************************/
-	SERVO_voidTimer1InitOCR1B();
-	SERVO_voidTimer1ServoSetAngleOCR1B(270);
-//
-	/**************************** Init ULTRASONIC *****************************/
-	ULTRASONIC_voidInit();
-	
-/***************************** INIT SPEAD ****************************/
-	Set_Car_Speed(Robot_u8_INIT_SPEED);
-/************************************** MOTOR DRIVER L298******************************************************/
-	DIO_setPinDirection(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN1,DIO_PIN_OUTPUT);
-	DIO_setPinDirection(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN2,DIO_PIN_OUTPUT);
-	DIO_setPinDirection(Robot_u8_MOTOR_DRIVER_L298_PORT,Robot_u8_MOTOR_DRIVER_L298_IN3,DIO_PIN_OUTPUT);
-	DIO_setPinDirection(DIO_PORTB,DIO_PIN0,DIO_PIN_OUTPUT);
-	
-	DIO_setPinDirection( DIO_PORTC,DIO_PIN2,DIO_PIN_OUTPUT);
-	DIO_setPinDirection( DIO_PORTC,DIO_PIN7,DIO_PIN_OUTPUT);
-}
 
 
 /************************************************************************/
@@ -252,10 +48,103 @@ void Robot_voidInit(void)
 int main(void){
 	
 	/* Initialization Robot */
-	Robot_voidInit();	
+	
+	LCD_init();
+	
+	GI_enable();
+	SERVO_Init();
+	SERVO_ON(FORWARD_Angle);
+	
+	ULTRASONIC_Init();
+	
+	MOTORS_Init();
+	CAR_MoveForward();
+	CAR_SendDutyCycleAndStart(Speed);
+	
+	DIO_setPinDirection( DIO_PORTC,DIO_PIN2,DIO_PIN_OUTPUT);
+	DIO_setPinDirection( DIO_PORTC,DIO_PIN7,DIO_PIN_OUTPUT);
+
+	f64 UltraSonic_ForwardValue;
+	f64 UltraSonic_RightValue;
+	f64 UltraSonic_LeftValue;
+	
     while(1)
     {         
-		Start_AutoMode_Car();
+		
+		Ultrasonic_Get_Distance(&UltraSonic_ForwardValue);
+		
+	
+		if ( UltraSonic_ForwardValue>=20.00)
+		{
+			DIO_setPinValue( DIO_PORTC,DIO_PIN2,DIO_PIN_HIGH);
+			CAR_MoveForward();
+			
+			DIO_setPinValue( DIO_PORTC,DIO_PIN2,DIO_PIN_LOW);
+		}
+		else
+		{
+			
+		DIO_setPinValue( DIO_PORTC,DIO_PIN7,DIO_PIN_HIGH);
+		_delay_ms(1000);
+		DIO_setPinValue( DIO_PORTC,DIO_PIN7,DIO_PIN_LOW);
+		
+			CAR_Stop();
+			CAR_MoveBackward();
+			_delay_ms(500);
+			CAR_Stop();
+
+			// Measure Distance At Right
+			SERVO_ON(RIGHT_Angle);
+	
+ 			Ultrasonic_Get_Distance(&UltraSonic_RightValue);
+			LCD_clear();
+			LCD_goToSpecificPosition(1,1);
+			LCD_writeString("R=");
+			LCD_writeNumber(UltraSonic_RightValue);
+
+			LCD_writeString("CM");
+
+			_delay_ms(1000);
+			// Measure Distance At Left
+			SERVO_ON(LEFT_Angle);
+			
+			Ultrasonic_Get_Distance(&UltraSonic_LeftValue);
+			 LCD_clear();
+			LCD_goToSpecificPosition(1,2);
+			LCD_writeString("L=");
+			LCD_writeNumber(UltraSonic_LeftValue);
+			LCD_writeString("CM");
+			_delay_ms(1000);
+			
+			
+			if (UltraSonic_RightValue > UltraSonic_LeftValue)
+						{
+							//MOVE Right
+							LCD_clear();
+							
+							LCD_writeString("   Move Right  ");
+							SERVO_ON(FORWARD_Angle);
+							_delay_ms(100);
+							CAR_MoveForwardRight();
+							_delay_ms(500);
+							CAR_Stop();
+
+			}
+ 			else
+ 			{
+				 
+ 				//MOVE Left
+				 
+				 LCD_clear();
+				 LCD_writeString("  Move LEFT   ");
+ 				SERVO_ON(FORWARD_Angle);
+ 				_delay_ms(100);
+ 				CAR_MoveForwardleft();	
+ 				_delay_ms(500);
+ 				CAR_Stop();
+	}
+		}
+		
 	
     }
 

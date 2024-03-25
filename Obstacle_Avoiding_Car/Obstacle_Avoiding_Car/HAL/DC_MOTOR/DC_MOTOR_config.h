@@ -1,0 +1,23 @@
+/*
+ * DC_MOTOR_config.h
+ *
+ * Created: 3/17/2024 8:58:46 AM
+ *  Author: Go
+ */ 
+
+
+#ifndef DC_MOTOR_CONFIG_H_
+#define DC_MOTOR_CONFIG_H_
+
+#define MOTOR_LEFTPORT		DIO_PORTB
+#define MOTOR_LEFTINPUT1	DIO_PIN4
+#define	MOTOR_LEFTINPUT2	DIO_PIN5
+
+#define MOTOR_RIGHTPORT		DIO_PORTB
+#define MOTOR_RIGHTINPUT1	DIO_PIN6
+#define	MOTOR_RIGHTINPUT2	DIO_PIN0
+
+
+
+
+#endif /* DC_MOTOR_CONFIG_H_ */
