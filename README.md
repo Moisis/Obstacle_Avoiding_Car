@@ -5,8 +5,8 @@ different directions, avoid obstacles
 
 -----------------------------------------------------------------------------------------------------------------------
 Drivers:
-- MCAL:  DIO, GI, TIMERS, 
-- HAL:     Servo , ULTRASONIC
+- MCAL:  DIO, GI, TIMERS (Timer 0 , timer 1 , timer 2 ), 
+- HAL:     Servo , ULTRASONIC , DC Motors  ,LCD 
 - UTIL:       BIT_MATHS, STD_TYPES
 -----------------------------------------------------------------------------------------------------------------------
 Components:
@@ -17,6 +17,7 @@ Components:
 - H-Bridge (L298N) 
 - Servo Motor 
 - Ultrasonic Sensor
+- LCD
 -----------------------------------------------------------------------------------------------------------------------
 
  This program implements functions to enable the SmartCar to avoid obstacles. It uses an ultrasonic sensor 
@@ -32,3 +33,9 @@ Picture:
 
 
 ![WhatsApp Image 2024-03-21 at 3 02 24 PM](https://github.com/Moisis/Obstacle_Avoiding_Car/assets/19711568/795c6ecb-08ef-4a5e-b62c-827ecaf50c24)
+
+
+-----------------------------------------------------------------------------------------------------------------------
+
+Presentation link : 
+https://prezi.com/view/bQjqHlqrArMc5hZ9qham/
